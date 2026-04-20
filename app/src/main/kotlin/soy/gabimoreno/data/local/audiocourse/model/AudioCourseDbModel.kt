@@ -2,8 +2,8 @@ package soy.gabimoreno.data.local.audiocourse.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import soy.gabimoreno.coredomain.model.audio.Saga
 import soy.gabimoreno.data.remote.model.Category
-import soy.gabimoreno.domain.model.audio.Saga
 
 @Entity
 data class AudioCourseDbModel(

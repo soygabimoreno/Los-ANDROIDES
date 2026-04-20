@@ -63,15 +63,6 @@
                     android:scheme="https" />
             </intent-filter>
         </activity>
-
-        <service
-            android:name=".player.service.MediaPlayerService"
-            android:exported="false"
-            android:foregroundServiceType="mediaPlayback">
-            <intent-filter>
-                <action android:name="android.media.browse.MediaBrowserService" />
-            </intent-filter>
-        </service>
         <service
             android:name=".framework.notification.DefaultFirebaseMessagingService"
             android:exported="false">

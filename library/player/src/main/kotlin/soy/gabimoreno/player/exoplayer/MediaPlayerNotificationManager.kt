@@ -12,7 +12,7 @@ import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ui.PlayerNotificationManager
-import soy.gabimoreno.R
+import soy.gabimoreno.player.R
 
 class MediaPlayerNotificationManager(
     private val context: Context,

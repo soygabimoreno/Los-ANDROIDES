@@ -1,8 +1,8 @@
 package soy.gabimoreno.fake
 
+import soy.gabimoreno.coredomain.model.audio.Saga
 import soy.gabimoreno.data.local.premiumaudio.PremiumAudioDbModel
 import soy.gabimoreno.data.remote.model.Category
-import soy.gabimoreno.domain.model.audio.Saga
 
 fun buildPremiumAudioDbModels() =
     listOf(

@@ -14,11 +14,11 @@ import org.junit.Before
 import org.junit.Test
 import soy.gabimoreno.core.testing.relaxedMockk
 import soy.gabimoreno.core.testing.verifyOnce
+import soy.gabimoreno.coredomain.model.audio.Audio
 import soy.gabimoreno.data.tracker.Tracker
 import soy.gabimoreno.data.tracker.domain.PlayPause
 import soy.gabimoreno.data.tracker.main.PlayerTrackerEvent
 import soy.gabimoreno.data.tracker.toMap
-import soy.gabimoreno.domain.model.audio.Audio
 import soy.gabimoreno.domain.usecase.CheckShouldIShowInAppReviewUseCase
 import soy.gabimoreno.domain.usecase.GetAudioByIdUseCase
 import soy.gabimoreno.domain.usecase.GetLastAudioListenedIdUseCase

@@ -1,7 +1,7 @@
 package soy.gabimoreno.domain.model.podcast
 
-import soy.gabimoreno.domain.model.audio.Audio
-import soy.gabimoreno.domain.model.audio.Saga
+import soy.gabimoreno.coredomain.model.audio.Audio
+import soy.gabimoreno.coredomain.model.audio.Saga
 
 data class Episode(
     override val id: String,

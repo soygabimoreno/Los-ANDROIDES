@@ -22,14 +22,14 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import soy.gabimoreno.di.CacheProvider
+import soy.gabimoreno.player.di.CacheProvider
 import soy.gabimoreno.player.exoplayer.AudioMediaSource
 import soy.gabimoreno.player.exoplayer.MediaPlaybackPreparer
 import soy.gabimoreno.player.exoplayer.MediaPlayerNotificationListener
 import soy.gabimoreno.player.exoplayer.MediaPlayerNotificationManager
 import soy.gabimoreno.player.exoplayer.MediaPlayerQueueNavigator
-import soy.gabimoreno.presentation.MainActivity
 import javax.inject.Inject
+import javax.inject.Named
 
 @AndroidEntryPoint
 class MediaPlayerService : MediaBrowserServiceCompat() {
@@ -41,6 +41,10 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
 
     @Inject
     lateinit var mediaSource: AudioMediaSource
+
+    @Inject
+    @Named(MAIN_ACTIVITY_PENDING_INTENT)
+    lateinit var activityPendingIntent: PendingIntent
 
     private val serviceJob = Job()
     private val serviceScope = CoroutineScope(Dispatchers.Main + serviceJob)
@@ -67,17 +71,6 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
 
     override fun onCreate() {
         super.onCreate()
-        val activityPendingIntent =
-            Intent(this, MainActivity::class.java)
-                .let {
-                    PendingIntent.getActivity(
-                        this,
-                        0,
-                        it,
-                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
-                    )
-                }
-
         mediaSession =
             MediaSessionCompat(this, TAG).apply {
                 setSessionActivity(activityPendingIntent)
@@ -253,3 +246,4 @@ const val REFRESH_MEDIA_BROWSER_CHILDREN = "REFRESH_MEDIA_BROWSER_CHILDREN"
 const val SET_PLAYBACK_SPEED = "SET_PLAYBACK_SPEED"
 const val START_MEDIA_PLAYBACK_ACTION = "START_MEDIA_PLAYBACK_ACTION"
 private const val POSITION_UPDATE_INTERVAL = 1_000L
+const val MAIN_ACTIVITY_PENDING_INTENT = "MAIN_ACTIVITY_PENDING_INTENT"

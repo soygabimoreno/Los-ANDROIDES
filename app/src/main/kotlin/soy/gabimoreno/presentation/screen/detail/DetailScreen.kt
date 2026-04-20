@@ -39,10 +39,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.insets.navigationBarsPadding
 import soy.gabimoreno.R
+import soy.gabimoreno.coredomain.model.audio.Audio
 import soy.gabimoreno.data.remote.mapper.EMPTY_AUDIO_LENGTH_IN_SECONDS
 import soy.gabimoreno.data.remote.model.Category
 import soy.gabimoreno.data.tracker.domain.toPlayPause
-import soy.gabimoreno.domain.model.audio.Audio
 import soy.gabimoreno.domain.model.content.PremiumAudio
 import soy.gabimoreno.domain.model.podcast.Episode
 import soy.gabimoreno.framework.parseFromHtmlFormat

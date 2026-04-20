@@ -2,7 +2,7 @@ package soy.gabimoreno.data.local.podcast.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import soy.gabimoreno.domain.model.audio.Saga
+import soy.gabimoreno.coredomain.model.audio.Saga
 
 @Entity
 data class PodcastDbModel(

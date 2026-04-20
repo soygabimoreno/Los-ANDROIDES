@@ -1,7 +1,7 @@
 package soy.gabimoreno.domain.usecase
 
 import arrow.core.Either
-import soy.gabimoreno.domain.model.audio.Audio
+import soy.gabimoreno.coredomain.model.audio.Audio
 import soy.gabimoreno.domain.repository.audiocourse.AudioCourseRepository
 import soy.gabimoreno.domain.repository.podcast.PodcastRepository
 import soy.gabimoreno.domain.repository.premiumaudio.PremiumAudiosRepository

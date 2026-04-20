@@ -40,7 +40,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import soy.gabimoreno.R
-import soy.gabimoreno.domain.model.audio.Audio
+import soy.gabimoreno.coredomain.model.audio.Audio
 import soy.gabimoreno.domain.model.content.Playlist
 import soy.gabimoreno.framework.toast
 import soy.gabimoreno.presentation.screen.ViewModelProvider
@@ -166,7 +166,8 @@ private fun PlaylistDetailHeader(
                 Modifier
                     .windowInsetsPadding(
                         WindowInsets.safeDrawing.only(WindowInsetsSides.Top),
-                    ).align(Alignment.TopStart),
+                    )
+                    .align(Alignment.TopStart),
         )
 
         if (state.playlistAudioItems.isNotEmpty()) {

@@ -4,8 +4,8 @@ import androidx.annotation.VisibleForTesting
 import com.prof18.rssparser.model.ItunesItemData
 import com.prof18.rssparser.model.RssChannel
 import com.prof18.rssparser.model.RssItem
+import soy.gabimoreno.coredomain.model.audio.Saga
 import soy.gabimoreno.domain.model.GABI_MORENO_WEB_BASE_URL
-import soy.gabimoreno.domain.model.audio.Saga
 import soy.gabimoreno.domain.model.podcast.Episode
 import soy.gabimoreno.domain.model.podcast.EpisodesWrapper
 import java.text.SimpleDateFormat

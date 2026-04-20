@@ -120,12 +120,14 @@ android {
 
 dependencies {
     implementation(projects.core.core)
+    implementation(projects.core.coreDomain)
     implementation(projects.core.coreTesting)
     implementation(projects.core.coreView)
 
     implementation(projects.feature.auth)
     implementation(projects.feature.podcast)
 
+    implementation(projects.library.player)
     implementation(projects.library.framework)
     implementation(projects.library.remoteConfig.api)
     implementation(projects.library.remoteConfig.impl)
@@ -155,9 +157,6 @@ dependencies {
     ksp(libs.moshi.codegen)
     implementation(libs.logging.interceptor)
     implementation(libs.rssparser)
-    implementation(libs.exoplayer)
-    implementation(libs.extension.mediasession)
-    implementation(libs.glide)
     implementation(libs.accompanist.insets)
     implementation(libs.coil.compose)
     implementation(libs.arrow.core)

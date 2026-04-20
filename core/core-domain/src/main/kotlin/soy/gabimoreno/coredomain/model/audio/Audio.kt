@@ -1,4 +1,4 @@
-package soy.gabimoreno.domain.model.audio
+package soy.gabimoreno.coredomain.model.audio
 
 interface Audio {
     val id: String

@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.androidLibrary)
     kotlin("android")
+    id("dagger.hilt.android.plugin")
     alias(libs.plugins.ksp)
 }
 
@@ -40,6 +41,8 @@ android {
 }
 
 dependencies {
+    implementation(projects.core.coreDomain)
+
     implementation(libs.core.ktx)
     implementation(libs.appcompat)
     implementation(libs.google.material)
@@ -47,6 +50,9 @@ dependencies {
     ksp(libs.hilt.android.compiler)
     implementation(libs.compose.ui)
     implementation(libs.palette)
+    implementation(libs.exoplayer)
+    implementation(libs.glide)
+    implementation(libs.extension.mediasession)
 
     testImplementation(libs.junit)
     testImplementation(libs.kluent.android)

@@ -45,9 +45,9 @@ import coil.compose.AsyncImage
 import coil.request.CachePolicy
 import coil.request.ImageRequest
 import soy.gabimoreno.R
+import soy.gabimoreno.coredomain.model.audio.Audio
+import soy.gabimoreno.coredomain.model.audio.Saga
 import soy.gabimoreno.data.tracker.domain.toPlayPause
-import soy.gabimoreno.domain.model.audio.Audio
-import soy.gabimoreno.domain.model.audio.Saga
 import soy.gabimoreno.domain.model.podcast.Episode
 import soy.gabimoreno.presentation.screen.ViewModelProvider
 import soy.gabimoreno.presentation.theme.Percent

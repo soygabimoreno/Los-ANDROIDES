@@ -27,7 +27,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import soy.gabimoreno.R
-import soy.gabimoreno.domain.model.audio.Saga
+import soy.gabimoreno.coredomain.model.audio.Saga
 import soy.gabimoreno.domain.model.podcast.Episode
 import soy.gabimoreno.presentation.theme.GabiMorenoTheme
 import soy.gabimoreno.presentation.theme.Orange

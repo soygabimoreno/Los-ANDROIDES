@@ -8,7 +8,7 @@ import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DataSource
-import soy.gabimoreno.domain.model.audio.Audio
+import soy.gabimoreno.coredomain.model.audio.Audio
 import javax.inject.Inject
 import javax.inject.Singleton
 

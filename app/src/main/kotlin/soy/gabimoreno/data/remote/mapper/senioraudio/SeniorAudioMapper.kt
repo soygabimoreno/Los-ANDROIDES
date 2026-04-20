@@ -3,7 +3,7 @@ package soy.gabimoreno.data.remote.mapper.senioraudio
 import com.prof18.rssparser.model.ItunesItemData
 import com.prof18.rssparser.model.RssChannel
 import com.prof18.rssparser.model.RssItem
-import soy.gabimoreno.domain.model.audio.Saga
+import soy.gabimoreno.coredomain.model.audio.Saga
 import soy.gabimoreno.domain.model.content.SeniorAudio
 import soy.gabimoreno.domain.model.content.SeniorAudiosWrapper
 import java.text.SimpleDateFormat

@@ -1,7 +1,7 @@
 package soy.gabimoreno.domain.model.content
 
+import soy.gabimoreno.coredomain.model.audio.Saga
 import soy.gabimoreno.data.remote.model.Category
-import soy.gabimoreno.domain.model.audio.Saga
 
 data class AudioCourse(
     val id: String,

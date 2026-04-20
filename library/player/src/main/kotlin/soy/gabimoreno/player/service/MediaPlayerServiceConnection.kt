@@ -11,7 +11,7 @@ import androidx.compose.runtime.mutableStateOf
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import soy.gabimoreno.domain.model.audio.Audio
+import soy.gabimoreno.coredomain.model.audio.Audio
 import soy.gabimoreno.player.exoplayer.AudioMediaSource
 import soy.gabimoreno.player.extension.currentPosition
 import javax.inject.Inject

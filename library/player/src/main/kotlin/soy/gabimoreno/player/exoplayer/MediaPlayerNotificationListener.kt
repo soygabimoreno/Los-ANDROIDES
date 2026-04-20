@@ -33,7 +33,10 @@ class MediaPlayerNotificationListener(
                     this,
                     Intent(applicationContext, this::class.java),
                 )
-                startForeground(PLAYBACK_NOTIFICATION_ID, notification)
+                startForeground(
+                    PLAYBACK_NOTIFICATION_ID,
+                    notification,
+                )
                 isForegroundService = true
             }
         }

@@ -75,8 +75,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import soy.gabimoreno.R
+import soy.gabimoreno.coredomain.model.audio.Saga
 import soy.gabimoreno.data.remote.model.Category
-import soy.gabimoreno.domain.model.audio.Saga
 import soy.gabimoreno.domain.model.content.PremiumAudio
 import soy.gabimoreno.framework.datastore.isMemberActive
 import soy.gabimoreno.framework.toast
@@ -406,7 +406,8 @@ fun PremiumItem(
                 .fillMaxWidth()
                 .clickable {
                     onItemClick(premiumAudio.id)
-                }.background(
+                }
+                .background(
                     brush =
                         run {
                             // TODO: This is a provisional patch for visualization
@@ -419,7 +420,8 @@ fun PremiumItem(
                             SolidColor(backgroundColor)
                         },
                     alpha = 0.5f,
-                ).padding(horizontal = Spacing.s16, vertical = Spacing.s16),
+                )
+                .padding(horizontal = Spacing.s16, vertical = Spacing.s16),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceEvenly,
     ) {

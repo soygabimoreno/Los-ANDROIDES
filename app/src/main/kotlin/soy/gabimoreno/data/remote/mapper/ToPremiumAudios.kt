@@ -1,6 +1,6 @@
 package soy.gabimoreno.data.remote.mapper
 
-import soy.gabimoreno.domain.model.audio.Saga
+import soy.gabimoreno.coredomain.model.audio.Saga
 import soy.gabimoreno.domain.model.content.Post
 import soy.gabimoreno.domain.model.content.PremiumAudio
 

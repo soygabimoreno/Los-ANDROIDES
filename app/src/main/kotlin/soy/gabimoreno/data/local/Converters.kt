@@ -2,7 +2,7 @@ package soy.gabimoreno.data.local
 
 import androidx.room.TypeConverter
 import com.google.gson.Gson
-import soy.gabimoreno.domain.model.audio.Saga
+import soy.gabimoreno.coredomain.model.audio.Saga
 
 class Converters {
     @TypeConverter

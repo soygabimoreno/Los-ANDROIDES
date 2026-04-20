@@ -1,7 +1,7 @@
 package soy.gabimoreno.fake
 
+import soy.gabimoreno.coredomain.model.audio.Saga
 import soy.gabimoreno.data.local.podcast.model.PodcastDbModel
-import soy.gabimoreno.domain.model.audio.Saga
 
 fun buildPodcastDbModels() =
     listOf<PodcastDbModel>(

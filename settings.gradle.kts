@@ -30,6 +30,7 @@ dependencyResolutionManagement {
 rootProject.name = "Base"
 include(":app")
 include(":core:core")
+include(":core:core-domain")
 include(":core:core-testing")
 include(":core:core-view")
 include(":feature:auth")

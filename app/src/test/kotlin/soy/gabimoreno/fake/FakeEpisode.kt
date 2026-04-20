@@ -1,6 +1,6 @@
 package soy.gabimoreno.fake
 
-import soy.gabimoreno.domain.model.audio.Saga
+import soy.gabimoreno.coredomain.model.audio.Saga
 import soy.gabimoreno.domain.model.podcast.Episode
 
 fun buildEpisodes() =

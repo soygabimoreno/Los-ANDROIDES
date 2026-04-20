@@ -9,11 +9,11 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import soy.gabimoreno.R
+import soy.gabimoreno.coredomain.model.audio.Audio
 import soy.gabimoreno.data.tracker.Tracker
 import soy.gabimoreno.data.tracker.domain.PlayPause
 import soy.gabimoreno.data.tracker.main.DetailTrackerEvent
 import soy.gabimoreno.data.tracker.toMap
-import soy.gabimoreno.domain.model.audio.Audio
 import soy.gabimoreno.domain.model.content.PremiumAudio
 import soy.gabimoreno.domain.model.podcast.Episode
 import soy.gabimoreno.domain.usecase.UpdateAudioItemFavoriteStateUseCase

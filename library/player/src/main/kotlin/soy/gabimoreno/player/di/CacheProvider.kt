@@ -1,4 +1,4 @@
-package soy.gabimoreno.di
+package soy.gabimoreno.player.di
 
 import android.content.Context
 import com.google.android.exoplayer2.database.ExoDatabaseProvider

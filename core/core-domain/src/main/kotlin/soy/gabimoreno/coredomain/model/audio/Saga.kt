@@ -1,4 +1,4 @@
-package soy.gabimoreno.domain.model.audio
+package soy.gabimoreno.coredomain.model.audio
 
 data class Saga(
     val author: String,

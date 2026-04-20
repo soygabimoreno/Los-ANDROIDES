@@ -76,9 +76,9 @@ import coil.request.CachePolicy
 import coil.request.ImageRequest
 import com.google.accompanist.insets.systemBarsPadding
 import soy.gabimoreno.R
+import soy.gabimoreno.coredomain.model.audio.Audio
+import soy.gabimoreno.coredomain.model.audio.Saga
 import soy.gabimoreno.data.tracker.domain.toPlayPause
-import soy.gabimoreno.domain.model.audio.Audio
-import soy.gabimoreno.domain.model.audio.Saga
 import soy.gabimoreno.domain.model.podcast.Episode
 import soy.gabimoreno.presentation.screen.ViewModelProvider
 import soy.gabimoreno.presentation.theme.Percent
@@ -393,7 +393,8 @@ private fun BoxScope.PlaybackSpeedSelector(
                 .background(
                     White,
                     shape = RoundedCornerShape(topStart = Spacing.s8, bottomEnd = Spacing.s8),
-                ).animateContentSize()
+                )
+                .animateContentSize()
                 .align(Alignment.BottomEnd)
                 .clickable {
                     onSpeedControlClick()

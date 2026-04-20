@@ -1,13 +1,13 @@
 package soy.gabimoreno.data.remote.mapper
 
 import soy.gabimoreno.core.removeHtmlTags
+import soy.gabimoreno.coredomain.model.audio.Saga
 import soy.gabimoreno.coreview.decodeUnicodeEscapedText
 import soy.gabimoreno.data.local.audiocourse.model.AudioCourseItemDbModel
 import soy.gabimoreno.data.remote.mapper.category.toCategory
 import soy.gabimoreno.data.remote.mapper.category.toSubcategory
 import soy.gabimoreno.data.remote.model.Category
 import soy.gabimoreno.data.remote.model.audiocourse.AudioCourseApiModel
-import soy.gabimoreno.domain.model.audio.Saga
 import soy.gabimoreno.domain.model.content.AudioCourse
 import soy.gabimoreno.domain.model.content.AudioCourseItem
 import soy.gabimoreno.domain.model.content.findAuthorDisplayNameById

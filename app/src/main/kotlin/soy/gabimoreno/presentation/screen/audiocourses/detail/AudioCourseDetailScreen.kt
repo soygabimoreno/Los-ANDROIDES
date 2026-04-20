@@ -37,8 +37,8 @@ import coil.compose.AsyncImage
 import coil.request.CachePolicy
 import coil.request.ImageRequest
 import soy.gabimoreno.R
+import soy.gabimoreno.coredomain.model.audio.Saga
 import soy.gabimoreno.data.remote.model.Category
-import soy.gabimoreno.domain.model.audio.Saga
 import soy.gabimoreno.domain.model.content.AudioCourse
 import soy.gabimoreno.domain.model.podcast.Episode
 import soy.gabimoreno.framework.toast
@@ -142,7 +142,8 @@ fun AudioCourseDetailScreen(
                         Modifier
                             .windowInsetsPadding(
                                 WindowInsets.safeDrawing.only(WindowInsetsSides.Top),
-                            ).clip(CircleShape)
+                            )
+                            .clip(CircleShape)
                             .background(PurpleDark.copy(alpha = 0.8f)),
                 ) {
                     BackButton(
