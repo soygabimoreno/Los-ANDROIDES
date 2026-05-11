@@ -142,8 +142,7 @@ fun AudioCourseDetailScreen(
                         Modifier
                             .windowInsetsPadding(
                                 WindowInsets.safeDrawing.only(WindowInsetsSides.Top),
-                            )
-                            .clip(CircleShape)
+                            ).clip(CircleShape)
                             .background(PurpleDark.copy(alpha = 0.8f)),
                 ) {
                     BackButton(
