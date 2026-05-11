@@ -52,7 +52,7 @@ dependencies {
     implementation(libs.palette)
     implementation(libs.exoplayer)
     implementation(libs.glide)
-    implementation(libs.extension.mediasession)
+    api(libs.extension.mediasession)
 
     testImplementation(libs.junit)
     testImplementation(libs.kluent.android)
