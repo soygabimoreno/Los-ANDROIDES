@@ -62,6 +62,20 @@ Important modules and folders:
 * `.agents/skills`: shared project skills for AI agents.
 * `.claude/skills`: symlink to `../.agents/skills` so Claude Code can discover the shared skills.
 
+## Shared Skills
+
+Project skills live in `.agents/skills` and are versioned with the repository so contributors
+and AI agents use the same procedures.
+
+Rules:
+
+* Keep project-specific skills in this repository.
+* Keep shared Android skills here as a project snapshot when collaborators need them.
+* Do not symlink project skills to local personal paths.
+* If a personal/global skill is useful for this project, copy it into `.agents/skills` and adapt it to this codebase.
+* Keep `.claude/skills` as a symlink to `../.agents/skills`.
+* Do not add unrelated skills such as content creation, Remotion, or general skill authoring unless the project needs them.
+
 ## Architecture
 
 Follow Clean Architecture with clear boundaries between:
