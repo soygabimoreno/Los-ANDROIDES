@@ -1,15 +1,15 @@
 ---
 name: android-modularization
 description: |
-  Module layout, dependency rules, and Gradle convention plugins for Android and KMP.
-  Trigger on: "set up the project", "add a module", "create a feature", "how should I
-  structure", "project structure", "convention plugin", "build-logic", "where does X live",
-  "new feature module", "core submodule".
+  Module layout, dependency rules, and Gradle convention plugins for Los ANDROIDES.
+  Trigger on: "add a module", "create a feature", "new feature module",
+  "how should I structure", "project structure", "convention plugin", "build-logic",
+  "where does X live", "core submodule", "library submodule".
 ---
 
-# Android / KMP Modular Architecture
+# Modular architecture — Los ANDROIDES
 
-## Core Philosophy
+## Core philosophy
 
 - **Feature-layered modularization**: split by feature first, then by layer within each feature.
 - **Clean Architecture layers**: `presentation` → `domain` ← `data`. Domain is innermost
@@ -17,95 +17,129 @@ description: |
 - **Code lives in a feature module unless it is needed by more than one feature** — then
   it moves to the appropriate `core` submodule.
 - **Features never depend on each other.** Cross-feature shared data belongs in
-  `core:domain` (domain models) or `core:presentation` (shared UI logic), not in the
+  `:core:core-domain` (domain models) or `:core:core-view` (shared UI logic), not in the
   owning feature.
 
 ---
 
-## Module Layout
+## Current module layout
+
+Authoritative source: `settings.gradle.kts`.
 
 ```
-:app
-:build-logic                    ← Gradle convention plugins
-:core:domain                    ← Shared domain models, interfaces, error types, Result
-:core:data                      ← Shared data logic, Ktor HttpClient factory
-:core:database                  ← Shared Room DB, all entities, DAOs, migrations
-:core:presentation              ← Shared UI utilities (ObserveAsEvents, UiText, etc.)
-:core:design-system             ← Reusable Compose components, colors, theme, typography
-:feature:<name>:domain          ← Feature-specific domain models, interfaces, error types
-:feature:<name>:data            ← Repo implementations, DTOs, mappers, Room DAOs
+:app                            ← Application entry point, wires all modules
+:build-logic                    ← Gradle convention plugins (composite build)
+:core:core                      ← Shared base utilities and base infra
+:core:core-domain               ← Shared domain models, interfaces, error types, Result
+:core:core-view                 ← Shared Compose UI utilities (ObserveAsEvents, UiText, etc.)
+:core:core-testing              ← Shared test doubles, fakes, fixtures
+:feature:auth                   ← Auth feature
+:feature:podcast                ← Podcast feature
+:library:framework              ← Framework abstractions
+:library:player                 ← Audio player
+:library:raffle                 ← Raffle library
+:library:remote-config:api      ← Remote config public API
+:library:remote-config:impl     ← Remote config implementation
+```
+
+`:library:remote-config` uses the **api/impl split** pattern: consumers depend on `:api`
+only; `:impl` is wired in `:app` and supplied at runtime, keeping consumers decoupled
+from the concrete implementation.
+
+---
+
+## Aspirational layering inside features
+
+A feature module should split into layers as it grows. For a new or expanding feature,
+create three modules so each layer is enforceable at the Gradle level:
+
+```
+:feature:<name>:domain          ← Feature domain models, interfaces, error types
+:feature:<name>:data            ← Repo implementations, DTOs, mappers, Retrofit services, Room DAOs
 :feature:<name>:presentation    ← ViewModel, screen composables, state, actions, events
 ```
 
 For standalone concerns involving meaningful complexity (multiple classes, configuration,
-or a non-trivial API surface), create a dedicated module under `:core`
-(e.g., `:core:location`, `:core:analytics`, `:core:auth`). Do not create a separate
-module for a single class or trivial utility — that belongs in an existing `core` module.
-
-A shared Room database lives in `:core:database`. Feature modules that need DB access
-depend on `:core:database` directly; features that don't need it remain decoupled.
+or a non-trivial API surface), create a dedicated module under `:core` or `:library`
+(e.g., `:core:core-analytics`, `:library:notifications`). Do not create a separate
+module for a single class or trivial utility — that belongs in an existing module.
 
 ---
 
-## Dependency Rules
+## Dependency rules
 
 | Layer | May depend on |
 |---|---|
-| `presentation` | `domain` (own feature), `core:domain`, `core:presentation`, `core:design-system` |
-| `data` | `domain` (own feature), `core:domain`, `core:data`, `core:database` |
-| `domain` | `core:domain` only — never `data` or `presentation` |
+| `presentation` | own `domain`, `:core:core-domain`, `:core:core-view`, `:core:core` |
+| `data` | own `domain`, `:core:core-domain`, `:core:core` |
+| `domain` | `:core:core-domain` only — never `data` or `presentation` |
 | `:app` | everything (wires all modules) |
 
-Every layer and module may access `core:domain`.
+Every layer and module may access `:core:core-domain`.
+
+`:core:core-testing` is only depended on from test source sets (`testImplementation`).
 
 ---
 
-## Convention Plugins (`:build-logic`)
+## Convention plugins (`:build-logic`)
 
-Define a convention plugin for every non-trivial Gradle config:
+`:build-logic` is a composite build (`includeBuild("build-logic")` in
+`settings.gradle.kts`) that exposes shared Gradle plugin configurations.
+
+Current convention plugins:
 
 | Plugin | Purpose |
 |---|---|
-| `android-application` | App module config (applicationId, versionCode, etc.) |
-| `android-library` | Base Android library config |
-| `android-feature` | Android library + Compose + Koin + shared feature deps bundled |
-| `domain-module` | Pure Kotlin/KMP module, no Android deps |
-| `compose` | Compose compiler + BOM |
-| `koin` | Koin dependency block |
-| `ktor` | Ktor client + serialization |
-| `room` | Room + KSP config |
-| `kotlinx-serialization` | KotlinX Serialization plugin + dep |
+| `androidLibrary` | Base Android library config (compileSdk, minSdk, kotlin, lint) |
 
-Use **version catalogs** (`libs.versions.toml`) for all dependency and version
+Aspirational convention plugins to introduce as the project grows (do not invent these
+until they are actually needed):
+
+| Plugin | Purpose |
+|---|---|
+| `androidApplication` | App module config (applicationId, versionCode, etc.) |
+| `androidFeature` | `androidLibrary` + Compose + Hilt + shared feature deps bundled |
+| `androidCompose` | Compose compiler + BOM + Material |
+| `androidHilt` | Hilt plugin + KSP + runtime deps |
+| `androidRoom` | Room plugin + KSP config |
+| `kotlinDomain` | Pure Kotlin module (no Android deps) for domain layers |
+
+Use **version catalogs** (`gradle/libs.versions.toml`) for all dependency and version
 management. No hardcoded versions in build files.
 
 ---
 
-## Key Libraries
+## Key libraries
 
 | Concern | Library |
 |---|---|
-| DI | Koin |
-| Networking | Ktor Client |
+| DI | Hilt (`com.google.dagger:hilt-android`) |
+| Networking | Retrofit 3 + OkHttp |
+| JSON | Moshi (codegen via `moshi-kotlin-codegen`) |
 | Local DB | Room |
-| Preferences | DataStore |
-| Navigation | Compose Navigation (type-safe) |
-| Serialization | KotlinX Serialization |
+| Preferences | DataStore (`androidx.datastore:datastore-preferences`) |
+| Navigation | Compose Navigation |
 | Image loading | Coil |
-| Logging | Kermit |
 | Async | Coroutines + Flow |
-| Background tasks | WorkManager |
-| Secrets | `local.properties` + `BuildConfig` (Android); `BuildKonfig` (KMP) |
-| Testing | JUnit5, Turbine, AssertK, `kotlinx-coroutines-test` |
-| UI testing | `ComposeTestRule` |
+| Functional types | Arrow |
+| Test framework | JUnit 4 |
+| Assertions | Kluent |
+| Mocking | MockK |
+| Flow testing | Turbine |
+| Coroutine testing | `kotlinx-coroutines-test` |
+| UI testing | `ComposeTestRule` (`androidx.compose.ui:ui-test-junit4`) |
+
+See `gradle/libs.versions.toml` for exact versions.
 
 ---
 
-## Checklist: Adding a New Feature Module
+## Checklist — adding a new feature module
 
-- [ ] Create `:feature:<name>:domain`, `:feature:<name>:data`,
-      `:feature:<name>:presentation` modules
-- [ ] Apply appropriate convention plugins (`domain-module`, `android-library` or
-      `android-feature`)
+- [ ] Decide: single module `:feature:<name>` (small surface) or layered
+      `:feature:<name>:domain` + `:data` + `:presentation` (growing surface)
+- [ ] Register the module(s) in `settings.gradle.kts`
+- [ ] Apply the appropriate convention plugin (`androidLibrary` today; eventually
+      `androidFeature` / `kotlinDomain`)
 - [ ] Verify no cross-feature dependencies are introduced
-- [ ] If logic is shared across 2+ features, extract to the appropriate `core` submodule
+- [ ] If logic is shared across 2+ features, extract to the appropriate `:core` submodule
+- [ ] Add Hilt bindings under the feature's `data`/`presentation` module

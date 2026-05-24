@@ -63,9 +63,12 @@ sealed interface NoteListEvent {
 
 ## ViewModel
 
+Inject dependencies via Hilt (`@HiltViewModel` + `@Inject constructor`):
+
 ```kotlin
-class NoteListViewModel(
-    private val noteRepository: NoteRepository
+@HiltViewModel
+class NoteListViewModel @Inject constructor(
+    private val noteRepository: NoteRepository,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(NoteListState())
@@ -126,8 +129,8 @@ AND is unit-tested directly.
 
 ## Mapping Errors to UI Strings
 
-`UiText` (`core:presentation`) wraps strings that originate from — or could originate
-from — a string resource:
+`UiText` (lives in `:core:core-view`) wraps strings that originate from — or could
+originate from — a string resource:
 
 ```kotlin
 sealed interface UiText {
@@ -157,7 +160,7 @@ data class NoteUi(val authorName: String, val formattedDate: String)
 ## ObserveAsEvents
 
 `ObserveAsEvents` collects a `Flow` of one-time events in a lifecycle-aware way,
-consuming each event exactly once. Lives in `core:presentation`:
+consuming each event exactly once. Lives in `:core:core-view`:
 
 ```kotlin
 @Composable
@@ -207,7 +210,7 @@ UI models are always suffixed with `Ui` (e.g., `NoteUi`, `TodoItemUi`).
 
 Both the Root and Screen composable live in the **same file** (e.g., `NoteListScreen.kt`).
 
-**Root composable** (suffixed `Root`): receives the ViewModel via `koinViewModel()` and
+**Root composable** (suffixed `Root`): receives the ViewModel via `hiltViewModel()` and
 any navigation callbacks. Observes events. Passes state and `onAction` down.
 
 **Screen composable** (suffixed `Screen`): receives only `state` and `onAction`. No
@@ -217,7 +220,7 @@ ViewModel reference — can be previewed independently.
 @Composable
 fun NoteListRoot(
     onNavigateToDetail: (String) -> Unit,
-    viewModel: NoteListViewModel = koinViewModel()
+    viewModel: NoteListViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -247,9 +250,10 @@ using `SavedStateHandle`. Only save what truly matters after process death — n
 entire state:
 
 ```kotlin
-class NoteEditorViewModel(
+@HiltViewModel
+class NoteEditorViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val noteRepository: NoteRepository
+    private val noteRepository: NoteRepository,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(
@@ -288,9 +292,11 @@ class NoteEditorViewModel(
 
 ## Checklist: Adding a New Screen
 
-- [ ] Define `State`, `Action`, `Event` in `feature:presentation`
-- [ ] Implement `ViewModel` with `Channel.BUFFERED` for events
-- [ ] Create `<Screen>Root` (holds ViewModel, observes events via `ObserveAsEvents`)
+- [ ] Define `State`, `Action`, `Event` in the feature's `presentation` layer
+- [ ] Implement `ViewModel` annotated `@HiltViewModel` with `@Inject constructor`,
+      using `Channel.BUFFERED` for events
+- [ ] Create `<Screen>Root` (holds ViewModel via `hiltViewModel()`, observes events
+      via `ObserveAsEvents`)
 - [ ] Create `<Screen>Screen` (pure state + onAction, previewable)
 - [ ] Map domain errors to `UiText` via extension functions
 - [ ] Add `SavedStateHandle` for any form fields that must survive process death

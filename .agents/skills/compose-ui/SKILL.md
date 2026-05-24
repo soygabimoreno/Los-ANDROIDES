@@ -2,9 +2,9 @@
 name: compose-ui
 description: |
   Los ANDROIDES project conventions for Compose: ViewModel-owned state, lazy list keys,
-  the :core:design-system module, Preview patterns with PreviewParameterProvider,
+  GabiMorenoTheme + design-system placement, Preview patterns with PreviewParameterProvider,
   accessibility, and TextField wired through MVI Actions. Trigger on: Los ANDROIDES
-  Compose screen, design-system, AppTheme, @Preview, PreviewParameterProvider,
+  Compose screen, GabiMorenoTheme, design-system, @Preview, PreviewParameterProvider,
   contentDescription, TextField + Action, collectAsStateWithLifecycle, LazyColumn key.
 ---
 
@@ -85,13 +85,15 @@ LazyColumn {
 
 ## Design system
 
-The design system lives in `:core:design-system` and contains reusable components,
-colors, theme, and typography. Feature modules consume it; they do not redefine
-colors, typography, or shared components.
+The theme entry point is `GabiMorenoTheme` (currently in
+`app/src/main/kotlin/soy/gabimoreno/presentation/theme/Theme.kt`). The aspirational
+location is a shared module — promote theme, typography, colors, and reusable
+Compose components to `:core:core-view` (or a dedicated `:core:core-design-system`)
+once a second consumer needs them. Feature modules consume the shared module; they
+do not redefine colors, typography, or shared components.
 
 Feature-level composables should prefer typed parameters over slot APIs for clarity.
-For genuine slot-based reusable components in `:core:design-system`, see
-`compose-slot-api-pattern`.
+For genuine slot-based reusable components, see `compose-slot-api-pattern`.
 
 ---
 
@@ -115,14 +117,14 @@ class NoteListStateProvider : PreviewParameterProvider<NoteListState> {
 private fun NoteListScreenPreview(
     @PreviewParameter(NoteListStateProvider::class) state: NoteListState
 ) {
-    AppTheme {
+    GabiMorenoTheme {
         NoteListScreen(state = state, onAction = {})
     }
 }
 ```
 
-Wrap previews in `AppTheme`. Use realistic data, not empty states (unless specifically
-previewing the empty state).
+Wrap previews in `GabiMorenoTheme`. Use realistic data, not empty states (unless
+specifically previewing the empty state).
 
 ---
 

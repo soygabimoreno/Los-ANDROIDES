@@ -1,15 +1,17 @@
 ---
 name: android-data-architecture
 description: |
-  Data layer patterns for Android/KMP: data sources, repositories, DTOs, mappers,
-  Room entities, Ktor HttpClient, safe call helpers, token storage, and offline-first.
-  Trigger on: "create a repository", "create a data source", "add a DAO", "Ktor client",
-  "write a mapper", "DTO", "Room entity", "network call", "token storage", "offline-first".
+  Data layer patterns for Los ANDROIDES: data sources, repositories, DTOs, mappers,
+  Room entities, Retrofit + Moshi networking, OkHttp interceptors, DataStore for tokens,
+  Hilt provisioning, and offline-first. Trigger on: "create a repository",
+  "create a data source", "add a DAO", "Retrofit service", "Moshi adapter",
+  "write a mapper", "DTO", "Room entity", "network call", "token storage",
+  "offline-first", "OkHttp interceptor".
 ---
 
-# Android / KMP Data Architecture
+# Data architecture — Los ANDROIDES
 
-## Error Handling
+## Error handling
 
 This skill uses `Result<T, E>`, `DataError`, and the extension helpers defined in the
 **android-typed-errors** skill. Refer to that skill for the full `Result` wrapper,
@@ -17,7 +19,7 @@ This skill uses `Result<T, E>`, `DataError`, and the extension helpers defined i
 
 ---
 
-## Data Source vs Repository
+## Data source vs Repository
 
 - **Data source** — accesses a single source (local DB, remote API, file system).
   Most classes in the data layer are data sources.
@@ -42,7 +44,7 @@ interface NoteRepository {
 }
 ```
 
-## Domain Layer Contracts
+## Domain layer contracts
 
 - Pure Kotlin — no Android/framework imports.
 - Contains: domain models, data source/repository **interfaces**, error types.
@@ -51,10 +53,10 @@ interface NoteRepository {
 
 ---
 
-## DTOs and Domain Models
+## DTOs and domain models
 
 - Always separate: DTOs (data layer) ↔ Domain Models (domain layer).
-- Domain models never go directly into Room entities or Ktor request/response bodies.
+- Domain models never go directly into Room entities or Retrofit request/response bodies.
 - Mappers are simple extension functions living in the data layer alongside the DTO:
 
 ```kotlin
@@ -62,6 +64,18 @@ fun NoteDto.toNote(): Note = Note(id = id, title = title, ...)
 fun Note.toNoteDto(): NoteDto = NoteDto(id = id, title = title, ...)
 fun NoteEntity.toNote(): Note = ...
 fun Note.toNoteEntity(): NoteEntity = ...
+```
+
+Annotate DTOs with `@JsonClass(generateAdapter = true)` so Moshi codegen generates the
+adapter at build time:
+
+```kotlin
+@JsonClass(generateAdapter = true)
+data class NoteDto(
+    @Json(name = "id") val id: String,
+    @Json(name = "title") val title: String,
+    @Json(name = "body") val body: String,
+)
 ```
 
 ---
@@ -108,7 +122,7 @@ The ViewModel collects the `Flow` directly — no manual refresh needed.
 ```kotlin
 class OfflineFirstNoteRepository(
     private val local: NoteLocalDataSource,
-    private val remote: NoteRemoteDataSource
+    private val remote: NoteRemoteDataSource,
 ) : NoteRepository {
     override suspend fun getNotes(): Result<List<Note>, DataError> {
         val remoteResult = remote.fetchNotes()
@@ -123,54 +137,118 @@ class OfflineFirstNoteRepository(
 }
 ```
 
-Use names like `RoomNoteDataSource`, `KtorNoteDataSource`, `OfflineFirstNoteRepository`.
-The name should tell you what the class wraps or how it behaves.
+Use names like `RoomNoteDataSource`, `RetrofitNoteDataSource`,
+`OfflineFirstNoteRepository`. The name should tell you what the class wraps or how
+it behaves.
 
 ---
 
-## Ktor — HttpClient Factory (`core:data`)
+## Retrofit — Service interfaces (feature module)
 
-Configure the client once. Accept the engine externally so tests can swap in a mock engine:
+Define a Retrofit service per feature in its `data` layer:
 
 ```kotlin
-object HttpClientFactory {
-    fun create(engine: HttpClientEngine): HttpClient = HttpClient(engine) {
-        install(ContentNegotiation) { json() }
-        install(Auth) {
-            bearer {
-                loadTokens { /* load from DataStore */ }
-                refreshTokens { /* call refresh endpoint, save new tokens */ }
-            }
-        }
-        install(Logging) {
-            logger = Logger.DEFAULT
-            level = LogLevel.ALL
-        }
-        defaultRequest { contentType(ContentType.Application.Json) }
-    }
+interface NoteService {
+    @GET("notes")
+    suspend fun getNotes(): List<NoteDto>
+
+    @POST("notes")
+    suspend fun createNote(@Body note: NoteDto): NoteDto
+
+    @DELETE("notes/{id}")
+    suspend fun deleteNote(@Path("id") id: String)
 }
 ```
 
-Inject `HttpClient` via Koin. For KMP, use the platform default engine.
+Suspend functions are first-class in Retrofit — no `Call<T>` wrappers. Throwing
+exceptions are mapped to `DataError.Network` in the data source layer via the
+helpers from **android-typed-errors**.
 
 ---
 
-## Ktor — Safe Call Helpers (`core:data`)
+## Retrofit + Moshi + OkHttp wiring (Hilt, shared `core` module)
 
-Use `safeCall` / `responseToResult` helpers and typed extension functions
-(`HttpClient.get`, `HttpClient.post`, `HttpClient.delete`) to keep data source call
-sites clean and uniform. See the **android-typed-errors** skill for the full
-implementation of these helpers.
+Configure Retrofit once. Inject `OkHttpClient` and `Moshi` separately so they can be
+shared and customized:
 
 ```kotlin
-suspend fun getNotes(): Result<List<NoteDto>, DataError.Network> {
-    return httpClient.get(route = "/notes")
+@Module
+@InstallIn(SingletonComponent::class)
+object NetworkModule {
+
+    @Provides
+    @Singleton
+    fun provideMoshi(): Moshi =
+        Moshi.Builder()
+            // .add(KotlinJsonAdapterFactory()) // only if not using codegen
+            .build()
+
+    @Provides
+    @Singleton
+    fun provideAuthInterceptor(tokenStore: TokenStore): Interceptor =
+        Interceptor { chain ->
+            val token = runBlocking { tokenStore.accessToken() }
+            val request = chain.request().newBuilder()
+                .apply { token?.let { addHeader("Authorization", "Bearer $it") } }
+                .build()
+            chain.proceed(request)
+        }
+
+    @Provides
+    @Singleton
+    fun provideOkHttpClient(
+        authInterceptor: Interceptor,
+    ): OkHttpClient =
+        OkHttpClient.Builder()
+            .addInterceptor(authInterceptor)
+            .addInterceptor(HttpLoggingInterceptor().apply {
+                level = HttpLoggingInterceptor.Level.BODY
+            })
+            .build()
+
+    @Provides
+    @Singleton
+    fun provideRetrofit(
+        okHttpClient: OkHttpClient,
+        moshi: Moshi,
+    ): Retrofit =
+        Retrofit.Builder()
+            .baseUrl(BuildConfig.API_BASE_URL)
+            .client(okHttpClient)
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
+            .build()
+
+    @Provides
+    @Singleton
+    fun provideNoteService(retrofit: Retrofit): NoteService =
+        retrofit.create(NoteService::class.java)
 }
 ```
 
+`logging-interceptor` is in the version catalog (`com.squareup.okhttp3:logging-interceptor`).
+
 ---
 
-## Room — Key Patterns
+## Safe call helpers
+
+Wrap Retrofit service calls with the `safeCall` / `responseToResult` helpers from
+**android-typed-errors** so data source call sites stay clean and uniform:
+
+```kotlin
+class RetrofitNoteDataSource(
+    private val service: NoteService,
+) : NoteRemoteDataSource {
+    override suspend fun fetchNotes(): Result<List<NoteDto>, DataError.Network> =
+        safeCall { service.getNotes() }
+}
+```
+
+The helper catches `IOException`, `HttpException`, and maps HTTP status codes to
+`DataError.Network` variants.
+
+---
+
+## Room — key patterns
 
 Use `@Transaction` for any DAO operation that reads or writes multiple tables atomically:
 
@@ -187,20 +265,51 @@ the change is too complex for auto-migration:
 @Database(
     entities = [NoteEntity::class],
     version = 2,
-    autoMigrations = [AutoMigration(from = 1, to = 2)]
+    autoMigrations = [AutoMigration(from = 1, to = 2)],
 )
+abstract class AppDatabase : RoomDatabase()
+```
+
+Provide the database and DAOs via Hilt:
+
+```kotlin
+@Module
+@InstallIn(SingletonComponent::class)
+object DatabaseModule {
+
+    @Provides
+    @Singleton
+    fun provideDatabase(@ApplicationContext context: Context): AppDatabase =
+        Room.databaseBuilder(context, AppDatabase::class.java, "app.db")
+            .build()
+
+    @Provides
+    fun provideNoteDao(db: AppDatabase): NoteDao = db.noteDao()
+}
 ```
 
 ---
 
-## Token Storage
+## Token storage
 
-Store tokens in DataStore (in `core:data` or a dedicated `:core:auth` module). The
-Ktor `Auth` plugin reads/writes tokens and handles 401 refresh automatically.
+Store tokens in DataStore (`androidx.datastore:datastore-preferences`). Wrap access in
+a `TokenStore` interface so the `OkHttp` interceptor depends on the contract, not on
+DataStore directly:
+
+```kotlin
+interface TokenStore {
+    suspend fun accessToken(): String?
+    suspend fun save(access: String, refresh: String)
+    suspend fun clear()
+}
+```
+
+For 401 refresh, implement an `okhttp3.Authenticator` that calls the refresh endpoint
+and retries the original request with the new token.
 
 ---
 
-## Offline-First (when applicable)
+## Offline-first (when applicable)
 
 Follow **Room as single source of truth**: fetch from network → persist to Room →
 expose DB `Flow` to the ViewModel. The ViewModel never observes network responses
@@ -208,26 +317,30 @@ directly. Apply this pattern only when the project requires offline support.
 
 ---
 
-## Naming Conventions
+## Naming conventions
 
 | Thing | Convention | Example |
 |---|---|---|
 | Data source interface | `<Entity><Local/Remote>DataSource` | `NoteLocalDataSource` |
-| Data source impl | describe what makes it unique | `RoomNoteDataSource` |
+| Data source impl | describe what makes it unique | `RoomNoteDataSource`, `RetrofitNoteDataSource` |
 | Repository interface | `<Entity>Repository` (multi-source only) | `NoteRepository` |
 | Repository impl | describe what makes it unique | `OfflineFirstNoteRepository` |
 | DTO | `<Model>Dto` | `NoteDto` |
+| Retrofit service | `<Entity>Service` | `NoteService` |
 | Room entity | `<Model>Entity` | `NoteEntity` |
+| Room DAO | `<Entity>Dao` | `NoteDao` |
 | Mapper | extension fun on source type | `fun NoteDto.toNote()` |
 
 ---
 
-## Checklist: Adding a New Data Source or Repository
+## Checklist — adding a new data source or repository
 
-- [ ] Define domain model(s) in `feature:domain`
-- [ ] Define data source or repository interface in `feature:domain`
-- [ ] Define feature-specific error types in `feature:domain` (implement `Error`)
-- [ ] Define DTOs and Room entities in `feature:data`
-- [ ] Write mappers as extension functions in `feature:data`
-- [ ] Implement the data source or repository in `feature:data`, named for what makes
-      it unique
+- [ ] Define domain model(s) in the feature's `domain` layer
+- [ ] Define data source or repository interface in the feature's `domain` layer
+- [ ] Define feature-specific error types in `domain` (implement `Error`)
+- [ ] Define DTOs (with `@JsonClass(generateAdapter = true)`) and Room entities in `data`
+- [ ] Write mappers as extension functions in `data`
+- [ ] Define the Retrofit service interface in `data` (or in `:core:core` if shared)
+- [ ] Implement the data source or repository, named for what makes it unique
+- [ ] Provide via Hilt `@Module @InstallIn(SingletonComponent::class)` (binding
+      interface to impl with `@Binds`, or constructing impl with `@Provides`)
