@@ -34,6 +34,7 @@ The project is written in Kotlin and follows modern Android development practice
 * Prefer existing project patterns over new abstractions.
 * Do not introduce new architectural patterns unless explicitly requested.
 * Keep changes minimal, focused, and easy to review.
+* Do not commit or push without showing the diff and asking for confirmation first.
 * Do not refactor unrelated code.
 * Do not add unnecessary dependencies.
 * Do not duplicate logic when updating existing code is enough.
