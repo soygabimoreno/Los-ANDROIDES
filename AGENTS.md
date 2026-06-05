@@ -169,10 +169,14 @@ class GetUserProfileUseCase(
 * Keep dependency additions minimal.
 * Reuse existing versions and libraries before introducing new ones.
 * If a new dependency is required, add the catalog entry and the module usage in the same coherent change.
+* In `build.gradle.kts` `dependencies` blocks, do not add blank lines between entries of the same configuration type (`implementation`, `debugImplementation`, etc.). Only separate groups of different configuration types with a blank line.
 
 ## Testing
 
 Use the project's existing testing style.
+
+**Write tests as part of the same task**, not as a follow-up. Every new behavior in a use case,
+repository, or ViewModel must have at least one test covering it before the task is closed.
 
 Core rules:
 
@@ -285,6 +289,9 @@ When creating a feature:
 * Place UI in the presentation layer or feature module that owns the screen.
 * Place business behavior in use cases.
 * Place data access behind repositories.
+* Default implementation of an interface uses the **`Default` prefix** (`DefaultFooRepository`),
+  never the `Impl` suffix. Other data-layer classes are named after their mechanism
+  (`AssetQuizRepository`, `BestStreakDataStore`).
 * Add mappers at layer boundaries.
 * Add tests at the lowest useful level first.
 * Follow the naming and package structure of nearby features.
