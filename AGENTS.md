@@ -169,7 +169,7 @@ class GetUserProfileUseCase(
 * Keep dependency additions minimal.
 * Reuse existing versions and libraries before introducing new ones.
 * If a new dependency is required, add the catalog entry and the module usage in the same coherent change.
-* In `build.gradle.kts` `dependencies` blocks, do not add blank lines between entries of the same configuration type (`implementation`, `debugImplementation`, etc.). Only separate groups of different configuration types with a blank line.
+* In `build.gradle.kts` `dependencies` blocks, sort entries alphabetically within each configuration group (`implementation`, `debugImplementation`, `ksp`, `testImplementation`, etc.) and do not add blank lines within a group. Only separate groups with a blank line.
 
 ## Testing
 
