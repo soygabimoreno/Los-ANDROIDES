@@ -152,6 +152,7 @@ class GetUserProfileUseCase(
 * Prefer constructor injection.
 * Keep DI modules explicit and easy to navigate.
 * Do not introduce another DI framework.
+* In Hilt `@Binds` methods, name the parameter after the concrete type in camelCase (`newsletterDataStore: NewsletterDataStore`, `defaultAuthRepository: DefaultAuthRepository`), never a generic `impl`.
 
 ## Coroutines and Flow
 
@@ -170,7 +171,9 @@ class GetUserProfileUseCase(
 * Keep dependency additions minimal.
 * Reuse existing versions and libraries before introducing new ones.
 * If a new dependency is required, add the catalog entry and the module usage in the same coherent change.
-* In `build.gradle.kts` `dependencies` blocks, sort entries alphabetically within each configuration group (`implementation`, `debugImplementation`, `ksp`, `testImplementation`, etc.) and do not add blank lines within a group. Only separate groups with a blank line.
+* In `build.gradle.kts` `dependencies` blocks, sort entries alphabetically within each configuration group (`implementation`, `debugImplementation`, `releaseImplementation`, `ksp`, `testImplementation`, etc.), including `implementation(platform(...))` entries (sorted by their catalog accessor). Do not add blank lines within a group; only separate groups with a blank line.
+* In `build.gradle.kts` `plugins` blocks, order the `alias(libs.plugins.*)` entries alphabetically. A leading convention-plugin `id("...")` stays first.
+* In `gradle/libs.versions.toml`: `[versions]` is a single alphabetical list with no blank lines; `[libraries]` keeps its logical groups separated by blank lines; put a blank line between the `[versions]`, `[libraries]` and `[plugins]` sections.
 
 ## Testing
 
@@ -239,6 +242,7 @@ val result = deferred.await()
 * When a function or constructor has more than one argument, prefer multiline formatting.
 * Extract repeated literals into local values or constants.
 * Replace `.invoke()` with `()`.
+* Place top-level `private const val` declarations (thresholds, URLs, keys) at the end of the file, after the class and any top-level functions.
 
 ## Verification
 
