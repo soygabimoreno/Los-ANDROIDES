@@ -41,6 +41,16 @@ The project is written in Kotlin and follows modern Android development practice
 * Preserve public APIs and method signatures unless the requested change requires otherwise.
 * Use Git deliberately and never overwrite unrelated local changes.
 
+## Version Control
+
+* Android Studio is configured to auto-add new files to git: Settings → Version Control →
+  Confirmation → "When files are created" = "Add silently", with "Apply to files created outside
+  Android Studio" checked. This is the expected IDE setup on every machine.
+* Because every new file gets tracked silently (including files created by AI agents or scripts),
+  do not create throwaway or temporary files inside the project tree, and make sure `.gitignore`
+  covers anything that must never be versioned (builds, local configs, credentials) before
+  creating it.
+
 ## Repository Structure
 
 Important modules and folders:
