@@ -128,11 +128,14 @@ val callback: () -> Unit = relaxedMockk()
 val tracker: AnalyticsTracker = relaxedMockk()
 ```
 
-Use `verifyOnce` / `verifyNever` instead of `verify(exactly = 1)` and `verify(inverse = true)`:
+Use `verifyOnce` / `verifyNever` instead of `verify(exactly = 1)` and `verify(inverse = true)`.
+Same for suspend calls: `coVerifyOnce` / `coVerifyNever` instead of `coVerify(exactly = 1)` and
+`coVerify(inverse = true)`:
 
 ```kotlin
 verifyOnce { noteRepository.insertNote(any()) }
 verifyNever { noteRepository.deleteNote(any()) }
+coVerifyOnce { noteRepository.syncNotes() }
 ```
 
 Replace `.invoke()` calls with `()` — it's an operator fun:
@@ -226,7 +229,7 @@ fun `GIVEN loading finished WHEN state observed THEN isLoading is false`() = run
 |---|---|
 | Your own interface (repository, data source) | **Fake** — simple in-memory impl |
 | Third-party class you cannot implement | **MockK** |
-| Verifying a specific call was made | MockK + `verifyOnce` / `verifyNever` |
+| Verifying a specific call was made | MockK + `verifyOnce` / `verifyNever` (`coVerifyOnce` / `coVerifyNever` for suspend) |
 
 Fakes exercise the full contract and catch more real bugs. Use MockK only when a fake
 would be impractical.
